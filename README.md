@@ -1,0 +1,2 @@
+# WaveView
+ Imitate the Android progress of  method, At present support functions:1. waveview to support the dynamic change of progress 2. waveview to support the progress callback Activity or fragments, use mask effect and the property animation 3. waveview to support custom change wave properties, including color wave, wave speed, wave shape of container (currently support circle, rectangular, and mask drawable).
