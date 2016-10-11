@@ -1,13 +1,262 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:id="@+id/activity_main"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#6C7B8B"
     tools:context="com.wave.sample.MainActivity">
 
-    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:text="Hello World!" />
-</RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/activity_horizontal_margin"
+        >
+
+        <LinearLayout
+            android:id="@+id/radio_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+
+            <TextView
+                android:id="@+id/mode_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mode:"
+                android:textColor="@color/white"
+                android:layout_gravity="center"
+                />
+
+            <RadioGroup
+                android:id="@+id/radio_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="3"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:layout_toRightOf="@id/mode_txt"
+                android:orientation="horizontal"
+                >
+
+                <RadioButton
+                    android:id="@+id/mode_circle"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="Circle"
+                    android:checked="true"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    />
+                <RadioButton
+                    android:id="@+id/mode_rect"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="Rect"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    />
+                <RadioButton
+                    android:id="@+id/mode_drawable"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="Draw"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    />
+
+            </RadioGroup>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/radio_view_color"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@id/radio_view"
+            >
+
+            <TextView
+                android:id="@+id/mode_txt_color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Color:"
+                android:textColor="@color/white"
+                android:layout_gravity="center"
+                />
+
+            <RadioGroup
+                android:id="@+id/radio_group_color"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="4"
+                android:layout_toRightOf="@id/mode_txt"
+                android:orientation="horizontal"
+                >
+
+                <RadioButton
+                    android:id="@+id/color_black"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="BLCK"
+                    android:checked="true"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    />
+                <RadioButton
+                    android:id="@+id/color_red"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="RED"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    />
+                <RadioButton
+                    android:id="@+id/color_blue"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="BLUE"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    />
+                <RadioButton
+                    android:id="@+id/color_green"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="GREEN"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    />
+            </RadioGroup>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/radio_view_speed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@id/radio_view_color"
+            >
+
+            <TextView
+                android:id="@+id/mode_txt_speed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Speed:"
+                android:textColor="@color/white"
+                android:layout_gravity="center"
+                />
+
+            <RadioGroup
+                android:id="@+id/radio_group_speed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="3"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_toRightOf="@id/mode_txt"
+                android:orientation="horizontal"
+                >
+
+                <RadioButton
+                    android:id="@+id/speed_slow"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="SLOW"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    />
+                <RadioButton
+                    android:id="@+id/speed_normal"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="NORMAL"
+                    android:checked="true"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    />
+                <RadioButton
+                    android:id="@+id/speed_fast"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="FAST"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    />
+            </RadioGroup>
+        </LinearLayout>
+
+        <com.yuan.waveview.WaveView
+            android:id="@+id/waveview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:layout_margin="20dp"
+            android:layout_below="@id/radio_view_speed"
+            app:backgroudColor="@color/white"
+            app:progressColor="@color/black"
+            app:max="20"
+            />
+
+        <TextView
+            android:id="@+id/pb_show_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/waveview"
+            android:layout_centerHorizontal="true"
+            android:text="0%"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            />
+
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            android:text="START"
+            android:layout_below="@id/pb_show_tv"
+            android:layout_alignParentLeft="true"
+            android:layout_marginRight="20dp"
+            />
+
+        <Button
+            android:id="@+id/speed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            android:text="SPEED"
+            android:layout_alignParentRight="true"
+            android:layout_marginLeft="20dp"
+            android:layout_below="@id/pb_show_tv"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/my"
+            android:gravity="center"
+            android:layout_alignParentBottom="true"
+            android:layout_below="@id/speed"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            />
+    </RelativeLayout>
+</ScrollView>
