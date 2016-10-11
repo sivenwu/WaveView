@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.i("yuan","max " + max + "prgress "+progress);
                 progressTv.setText(numberFormat.format(progress/(float)max * 100) + "%");
                 if (isDone){
-                    Toast.makeText(MainActivity.this,"加载成功",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this,"Loading completed!!!",Toast.LENGTH_SHORT).show();
                 }
             }
         });
