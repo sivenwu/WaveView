@@ -14,15 +14,13 @@ android:
     - extra-android-support
 
 before_install:
-- chmod +x gradlew  # 改变gradlew的访问权限
-
+  - chmod +x gradlew  # 改变gradlew的访问权限
+  gem install fir-cli
 #before_script:
 #- chmod a+x gradlew
 
 script:
   ./gradlew assembleRelease
 
-before_install:
-  - gem install fir-cli
 after_deploy:
   - fir p app/build/outputs/apk/app-release.apk -T 574df8872a3f7fe0fb8a63282eecd619 -c "`git cat-file tag $TRAVIS_TAG`"
