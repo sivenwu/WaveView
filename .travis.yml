@@ -1,27 +1,21 @@
 language: android
 
-notifications:      # 每次构建的时候是否通知，如果不想收到通知邮箱（个人感觉邮件贼烦），那就设置false吧
-  email: false
-
-jdk: oraclejdk8
-sudo: false         # 开启基于容器的Travis CI任务，让编译效率更高。
-
 android:
   components:
     - tools
-    - build-tools-23.0.2
-    - android-23
+    - build-tools-24.0.3
+    - android-24
     - extra-android-m2repository
-    - extra-android-support
 
-before_install:
- # - chmod +x gradlew  # 改变gradlew的访问权限
-  - gem install fir-cli
+jdk: oraclejdk8
 
-#before_script:
-#- chmod a+x gradlew
+notifications:
+  email: false
 
-script: ./gradlew connectedAndroidTest
+sudo: false
 
-after_deploy:
-  - fir p app/build/outputs/apk/app-release.apk -T 574df8872a3f7fe0fb8a63282eecd619 -c "`git cat-file tag $TRAVIS_TAG`"
+cache:
+  directories:
+    - $HOME/.gradle
+
+script: ./gradlew test
