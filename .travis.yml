@@ -15,7 +15,7 @@ android:
     - extra-android-support
 
 before_install:
-  - chmod +x gradlew  # 改变gradlew的访问权限
+ # - chmod +x gradlew  # 改变gradlew的访问权限
   - gem install fir-cli
 
 #before_script:
