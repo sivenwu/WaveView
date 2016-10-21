@@ -19,9 +19,9 @@ cache:
     - $HOME/.gradle
 
 before_install:
- - chmod +x gradlew  # 改变gradlew的访问权限
+ - chmod +x gradlew
 
 script:
-    - "./gradlew assembleRelease"
+    - ./gradlew assembleRelease
 
 
