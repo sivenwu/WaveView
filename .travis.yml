@@ -9,11 +9,11 @@ android:
 
 sudo false
 
-#before_install:
-# - chmod +x gradlew  # 改变gradlew的访问权限
+before_install:
+- chmod +x gradlew  # 改变gradlew的访问权限
 
-before_script:
-- chmod a+x gradlew
+#before_script:
+#- chmod a+x gradlew
 
 script:
   ./gradlew assembleRelease
