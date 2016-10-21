@@ -7,8 +7,10 @@ android:
     - extra-android-m2repository
     - extra-android-support
 
-before_install:
- - chmod +x gradlew  # 改变gradlew的访问权限
+sudo false
+
+#before_install:
+# - chmod +x gradlew  # 改变gradlew的访问权限
 
 before_script:
 - chmod a+x gradlew
