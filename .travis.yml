@@ -21,4 +21,7 @@ cache:
 before_install:
  - chmod +x gradlew  # 改变gradlew的访问权限
 
-script: ./gradlew test
+script:
+    - "./gradlew assembleRelease"
+
+
