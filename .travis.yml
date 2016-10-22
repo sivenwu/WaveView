@@ -1,0 +1,25 @@
+language: android
+
+android:
+  components:
+    - tools
+    - build-tools-24.0.3
+    - android-24
+    - extra-android-m2repository
+
+jdk: oraclejdk8
+
+
+sudo: false
+
+cache:
+  directories:
+    - $HOME/.gradle
+
+before_install:
+ - chmod +x gradlew
+
+script:
+    - ./gradlew assembleRelease
+
+
