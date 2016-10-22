@@ -22,12 +22,14 @@ before_install:
 script:
     - ./gradlew assembleRelease
 
-#deploy:
-      #provider: releases
-      #file: app/build/outputs/apk/app-release.apk
-      #skip_cleanup: true
-      #on:
-       #tags: false
-       # all_branches: true
+deploy:
+  provider: releases
+  api_key:
+    secure: e8e04e068803c7ae06a6d24be29ea3b8ea7cc9db
+  file: app/build/outputs/apk/app-release.apk
+  skip_cleanup: true
+  on:
+    tags: true
+    all_branches: true
 
 
