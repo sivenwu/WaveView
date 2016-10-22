@@ -26,11 +26,6 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GradleLocalSettings">
-    <option name="externalProjectsViewState">
-      <projects_view />
-    </option>
-  </component>
   <component name="ProjectFrameBounds">
     <option name="x" value="61" />
     <option name="y" value="23" />
@@ -337,12 +332,6 @@
   </component>
   <component name="ShelveChangesManager" show_recycled="false" />
   <component name="TaskManager">
-    <task active="true" id="Default" summary="Default task">
-      <changelist id="5d03123c-f156-4a93-8429-0580814bd935" name="Default" comment="" />
-      <created>1477130018829</created>
-      <option name="number" value="Default" />
-      <updated>1477130018829</updated>
-    </task>
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -378,8 +367,9 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
-  <component name="VcsContentAnnotationSettings">
-    <option name="myLimit" value="2678400000" />
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="delete" />
+    <option name="LAST_COMMIT_MESSAGE" value="delete" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
