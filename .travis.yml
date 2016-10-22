@@ -22,14 +22,4 @@ before_install:
 script:
     - ./gradlew assembleRelease
 
-deploy:
-  provider: releases
-  api_key:
-    secure: 7c0035690f0466fbc92af6b3cdb60dfacefc72fc
-  file: app/build/outputs/apk/app-release.apk
-  skip_cleanup: true
-  on:
-    tags: false
-    all_branches: true
-
 
