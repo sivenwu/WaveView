@@ -3,7 +3,7 @@ language: android
 android:
   components:
     - tools
-    - build-tools-24.0.3
+    - build-tools-24.0.1
     - android-24
     - extra-android-m2repository
 
@@ -21,5 +21,13 @@ before_install:
 
 script:
     - ./gradlew assembleRelease
+
+deploy:
+      provider: releases
+      file: app/build/outputs/apk/app-release.apk
+      skip_cleanup: true
+      on:
+        tags: false
+        all_branches: true
 
 
