@@ -6,8 +6,8 @@
     </CLASSES>
     <JAVADOC />
     <SOURCES>
-      <root url="jar://D:/AndroidStudio_SDK/extras/android/m2repository/com/android/support/animated-vector-drawable/24.0.0-beta1/animated-vector-drawable-24.0.0-beta1-sources.jar!/" />
-      <root url="jar://D:/AndroidStudio_SDK/extras/android/m2repository/com/android/support/animated-vector-drawable/24.0.0-beta1/animated-vector-drawable-24.0.0-beta1-sources.jar!/" />
+      <root url="jar://E:/developmentTools/AndroidSDK/extras/android/m2repository/com/android/support/animated-vector-drawable/24.0.0-beta1/animated-vector-drawable-24.0.0-beta1-sources.jar!/" />
+      <root url="jar://E:/developmentTools/AndroidSDK/extras/android/m2repository/com/android/support/animated-vector-drawable/24.0.0-beta1/animated-vector-drawable-24.0.0-beta1-sources.jar!/" />
     </SOURCES>
   </library>
 </component>
