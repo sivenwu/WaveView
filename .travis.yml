@@ -19,7 +19,10 @@ deploy:
   provider: releases
   api_key:
     secure: wLTt8G7RWQsF2KGMwmHlYoTBSSP/YkZxy+nyIc+yekwoRgZGhxHoI6pZbime2BhAJ0Ag7ZDEulpjYzJkjZ08OMlWoFa+eelykyzcR+S+o43frVnafYlWDR6XTrjGoKzPZ+KqyNVwrTU5csu1bJ16DqCCQqK+WC6LsRvRX0m0LREMNdgEJ5sVuoVbE/Do2wTZPRri9VBLVYwyFBsmNHLhW4xKhPUNwmHRU6zEhO1uVg8JCn4z3PJaRblcapdrp/JOFDFfOR/u4AW9ctzIRaTcSqV82mWvRyiWbFjilgw9tNlVCTykcLvNZKDa+Z8sWXpTpLlmgS43HxDZewdQ+NGIy8ihdKXz8x6EonGMM4mWeIkS1osm5EdpBlhfx+tt7mpHkp+r/FzZh7qrbT98JquZBYkqzEsOR8BXv6sw0Jai9KMPHDzkgAtDGS6Ir9FBIw3Kf+3r/iCe6wxdvnTzySPnPCffQ/fbENHVqvMAZqNRpolF7l3O40ZRhNPEpYG/9WekzDs37Udl8q2w80FTniDtgZWxnc1vIdbj5yHwRW1ipQLMNUBiQIgYx9Axiw96WzJMo0J6ezGWYQwrbdZ54TpluXGbCSQv5s3qChniKK+45FWWXPu4LXPSrqu+IT8swgeJR33f9aZ2jfp2Qbm2mhZPY5xXbSV/Cawh5F5eDQz+lEg=
-  file: ''
+  file: app/build/outputs/apk/app-release.apk
+  skip_cleanup: true
   on:
     tags: false
-    repo: YuanClouds/WaveView
+    all_branches: true
+
+
