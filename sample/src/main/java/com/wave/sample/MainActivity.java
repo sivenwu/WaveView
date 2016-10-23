@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
         initView();
         initListener();
+        Log.i("yuan","now ! start !");
     }
 
     private void initView(){
