@@ -63,7 +63,6 @@ public class MainActivity extends AppCompatActivity {
 
         initView();
         initListener();
-        Log.i("yuan","now ! start !");
     }
 
     private void initView(){
@@ -74,6 +73,9 @@ public class MainActivity extends AppCompatActivity {
         radioGroupSpeed = (RadioGroup) findViewById(R.id.radio_group_speed);
         progressTv = (TextView) findViewById(R.id.pb_show_tv);
         speedBtn = (Button) findViewById(R.id.speed);
+
+        waveView.setMax(50);
+        waveView.setProgress(10);
 
         max = (int) waveView.getMax();
     }
@@ -103,7 +105,8 @@ public class MainActivity extends AppCompatActivity {
         speedBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                waveView.setSpeed(speed++);
+                int p = (int) (waveView.getProgress()+3);
+                waveView.setProgress(p);
             }
         });
 

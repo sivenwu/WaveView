@@ -17,6 +17,7 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.animation.LinearInterpolator;
 
 import com.yuan.waveview.utils.DensityUtil;
@@ -103,6 +104,7 @@ public class WaveView extends View {
     private boolean isStartAnimation = false;// The first time for start the flowingAnimation
     private boolean isDone = false;// whether to end
     private boolean isMeasure = false;// The first time for measure view
+    private boolean isCompleteLayout = false;//绘制完成的时候调用
 
     /**
      * < value ></>
@@ -134,6 +136,8 @@ public class WaveView extends View {
 
     private waveProgressListener progressListener;
 
+    private ValueAnimator reiseAnimator;
+
     public WaveView(Context context) {
         super(context);
         init(context,null);
@@ -144,6 +148,7 @@ public class WaveView extends View {
         init(context,attrs);
     }
 
+    boolean has = false;
     private void init(Context context, AttributeSet attrs){
         if (attrs != null){
             //attars
@@ -178,6 +183,25 @@ public class WaveView extends View {
         wavePaint.setStyle(Paint.Style.FILL);
         wavePaint.setAntiAlias(true);
         wavePaint.setAlpha(50);
+
+        this.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                // TODO Auto-generated method stub
+                Log.i(TAG,"绘制完成");
+                if (has && progress > 0){
+
+                    isCompleteLayout = true;
+
+                    long cP = max - progress;
+                    if (max >= progress) {
+                        progressRatio = progress / (float) max;
+                        dy = updateDyData();
+                        getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    }
+                }
+            }
+        });
 
     }
 
@@ -306,8 +330,15 @@ public class WaveView extends View {
      * @param progress
      */
     public void setProgress(long progress) {
+        if (reiseAnimator!=null && reiseAnimator.isRunning()){
+//            reiseAnimator.cancel();//不应该取消，应该让其直接结束
+            reiseAnimator.end();
+        }
+
         this.progress = progress;
         if (progress == 0){ resetWave();}
+        if (!isCompleteLayout){return ;}
+
         long cP = max - progress;
         if (max >= progress) {
             progressRatio = cP / (float)max;
@@ -361,12 +392,21 @@ public class WaveView extends View {
             }
             shadpointList.add(point);
         }
+
+//        Log.i("wusy","test v : y " +shadpointList.get(0).y);
     }
 
     public void resetWave(){
         isDone = false;
         dy = VIEW_HEIGHT;
         beforDy = 0;
+    }
+
+    private int updateDyData(){
+        old_dy = dy;
+        int offsetDy = (int) (sum_dy - sum_dy * progressRatio - beforDy);
+        beforDy = sum_dy - sum_dy * progressRatio;
+        return  offsetDy;
     }
 
     /**
@@ -420,12 +460,14 @@ public class WaveView extends View {
         dy = VIEW_HEIGHT;//为了防止多次测量，必须重新更新初始高度
         old_dy = dy;
         sum_dy = dy;
+
         return (int) VIEW_HEIGHT;
     }
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
+        Log.i(TAG,"onLayout");
     }
 
     @Override
@@ -525,6 +567,7 @@ public class WaveView extends View {
     public void onWindowFocusChanged(boolean hasWindowFocus) {
         super.onWindowFocusChanged(hasWindowFocus);
         Log.d(TAG,"hasWindowFocus " +hasWindowFocus);
+        has = hasWindowFocus;
         if (!isStartAnimation){
             isStartAnimation = true;
             flowingAnimation();
@@ -559,25 +602,26 @@ public class WaveView extends View {
     private void riseAnimation(){
         isMeasure = true;
         if (dy > 0) {
-            old_dy = dy;
-            float s = sum_dy - sum_dy * progressRatio - beforDy;
-//            Log.i("yuan", "move s " + s);
-            ValueAnimator animator = ValueAnimator.ofFloat(0, s)
-                    .setDuration(500);
-            animator.setInterpolator(new LinearInterpolator());
-            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                    float m = (float) valueAnimator.getAnimatedValue();
-                    float s = old_dy - m;
-                    dy = s;
-                    Log.i("yuan", "move m " + m + "dy " + dy);
-                }
-            });
-            animator.start();
-            beforDy = sum_dy - sum_dy * progressRatio;//save the last time the higher level
+            float s = updateDyData();
+            Log.i("yuan", "move s " + s + "and sum_dy" + sum_dy);
+                reiseAnimator = ValueAnimator.ofFloat(0, s)
+                        .setDuration(500);
+                reiseAnimator.setInterpolator(new LinearInterpolator());
+                reiseAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                        float m = (float) valueAnimator.getAnimatedValue();
+                        float s = old_dy - m;
+                        dy = s;
+                        Log.i("yuan", "move m " + m + "dy " + dy);
+                    }
+                });
+
+
+                reiseAnimator.start();
         }
     }
+
 
     /**
      * drawable to bitmap

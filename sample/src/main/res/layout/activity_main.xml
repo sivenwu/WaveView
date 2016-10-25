@@ -208,7 +208,6 @@
             android:layout_below="@id/radio_view_speed"
             app:backgroudColor="@color/white"
             app:progressColor="@color/black"
-            app:max="20"
             />
 
         <TextView
