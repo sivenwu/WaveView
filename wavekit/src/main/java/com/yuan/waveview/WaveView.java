@@ -1,5 +1,6 @@
 package com.yuan.waveview;
 
+import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
@@ -74,6 +75,9 @@ public class WaveView extends View {
      */
     private float VIEW_WIDTH = 0f;
     private float VIEW_HEIGHT = 0f;
+    private float VIEW_WIDTH_TMP = 0f;
+    private float VIEW_HEIGHT_TMP = 0f;
+
 
     /**
      * the width and height for wave  < Width is half the width of view , Height is auto ></>
@@ -104,7 +108,8 @@ public class WaveView extends View {
     private boolean isStartAnimation = false;// The first time for start the flowingAnimation
     private boolean isDone = false;// whether to end
     private boolean isMeasure = false;// The first time for measure view
-    private boolean isCompleteLayout = false;//绘制完成的时候调用
+    private boolean isCompleteLayout = false;//just action when drawing finish
+    boolean isHasWindowFocus = false;// is hasWindowFocus
 
     /**
      * < value ></>
@@ -121,10 +126,10 @@ public class WaveView extends View {
     /**
      * There are three kinds of waveview mode of speed , including slow、normal and fast
      */
-    public final static int SPEED_SLOW = 10; // Slow speed
-    public final static int SPEED_NORMAL = 30;// normal speed
-    public final static int SPEED_FAST = 40;// fast speed
-    private int speed = SPEED_NORMAL;// default speed
+    public  static float SPEED_SLOW = 10f; // Slow speed
+    public  static float SPEED_NORMAL = 30f;// normal speed
+    public  static float SPEED_FAST = 40f;// fast speed
+    private float speed = SPEED_NORMAL;// default speed
 
     /**
      * < the progress for waveview ></>
@@ -137,6 +142,7 @@ public class WaveView extends View {
     private waveProgressListener progressListener;
 
     private ValueAnimator reiseAnimator;
+    private ObjectAnimator flowingAnimato;
 
     public WaveView(Context context) {
         super(context);
@@ -148,7 +154,6 @@ public class WaveView extends View {
         init(context,attrs);
     }
 
-    boolean has = false;
     private void init(Context context, AttributeSet attrs){
         if (attrs != null){
             //attars
@@ -189,7 +194,7 @@ public class WaveView extends View {
             public void onGlobalLayout() {
                 // TODO Auto-generated method stub
                 Log.i(TAG,"绘制完成");
-                if (has && progress > 0){
+                if (isHasWindowFocus && progress > 0){
 
                     isCompleteLayout = true;
 
@@ -198,8 +203,12 @@ public class WaveView extends View {
                         progressRatio = progress / (float) max;
                         dy = updateDyData();
                         getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        isMeasure = true;
                     }
                 }
+                VIEW_HEIGHT_TMP = VIEW_HEIGHT;
+                VIEW_WIDTH_TMP = VIEW_WIDTH;
+                Log.i(TAG,"tmp of width and tmp of hight is init ! "+VIEW_WIDTH_TMP +" "+VIEW_WIDTH_TMP);
             }
         });
 
@@ -208,7 +217,7 @@ public class WaveView extends View {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        Log.d(TAG,"onMeasure");
+        Log.d(TAG,"onMeasure " +isHasWindowFocus);
         if (!isMeasure)
             setMeasuredDimension(getRealWidthMeasureSpec(widthMeasureSpec),getRealHeightMeasureSpec(heightMeasureSpec));
         initPoint();
@@ -257,6 +266,18 @@ public class WaveView extends View {
                 }
                 shadpointList.add(point);
             }
+
+            //change speed base on view_width
+            SPEED_NORMAL =  (DensityUtil.px2dip(mContext,VIEW_WIDTH)/20);
+            SPEED_SLOW = SPEED_NORMAL/3;
+            SPEED_FAST = SPEED_SLOW * 4;
+
+            SPEED_NORMAL = SPEED_NORMAL ==0?1:SPEED_NORMAL;
+            SPEED_SLOW = SPEED_SLOW ==0?0.5f:SPEED_SLOW;
+            SPEED_FAST = SPEED_FAST ==0?2:SPEED_FAST;
+
+            this.speed = SPEED_NORMAL; // default
+            Log.i(TAG,"init speed ( normal : " + SPEED_NORMAL +" slow : "+SPEED_SLOW +" fast : "+SPEED_FAST +" )");
         }
     }
 
@@ -283,7 +304,7 @@ public class WaveView extends View {
      * set speed
      * @param speed including slow、normal and fast
      */
-    public void setSpeed(int speed) {
+    public void setSpeed(float speed) {
         if (speed == SPEED_FAST || speed == SPEED_NORMAL || speed == SPEED_SLOW) {
             this.speed = speed;
             dx = 0;
@@ -434,6 +455,7 @@ public class WaveView extends View {
             VIEW_WIDTH = widthSize;
         }else if (mode == MeasureSpec.UNSPECIFIED){
             Log.i(TAG,"UNSPECIFIED width :"+ DensityUtil.px2dip(mContext,widthSize));
+//            VIEW_WIDTH = VIEW_WIDTH_TMP;
         }
         return (int) VIEW_WIDTH;
     }
@@ -456,10 +478,13 @@ public class WaveView extends View {
             VIEW_HEIGHT = heightSize;
         }else if (mode == MeasureSpec.UNSPECIFIED){
             Log.i(TAG,"UNSPECIFIED heitht :"+ DensityUtil.px2dip(mContext,heightSize));
+//            VIEW_HEIGHT = VIEW_HEIGHT_TMP;
         }
-        dy = VIEW_HEIGHT;//为了防止多次测量，必须重新更新初始高度
-        old_dy = dy;
-        sum_dy = dy;
+        if (!isHasWindowFocus){updateDyData();}else {
+            dy = VIEW_HEIGHT;//为了防止多次测量，必须重新更新初始高度
+            old_dy = dy;
+            sum_dy = dy;
+        }
 
         return (int) VIEW_HEIGHT;
     }
@@ -467,7 +492,7 @@ public class WaveView extends View {
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
-        Log.i(TAG,"onLayout");
+//        Log.i(TAG,"onLayout");
     }
 
     @Override
@@ -566,19 +591,30 @@ public class WaveView extends View {
     @Override
     public void onWindowFocusChanged(boolean hasWindowFocus) {
         super.onWindowFocusChanged(hasWindowFocus);
-        Log.d(TAG,"hasWindowFocus " +hasWindowFocus);
-        has = hasWindowFocus;
+        isHasWindowFocus = hasWindowFocus;
         if (!isStartAnimation){
             isStartAnimation = true;
             flowingAnimation();
         }
+        // TODO: 2016/10/26  屏幕重新点亮的时候 一定要重新测量！！！
+        if (!hasWindowFocus){
+            if (flowingAnimato!=null)
+                flowingAnimato.cancel();
+            if (reiseAnimator!=null)
+                reiseAnimator.end();
+            isMeasure = false;
+        }else{
+            if (flowingAnimato!=null && !flowingAnimato.isRunning()){flowingAnimation();}
+            if (reiseAnimator!=null && !reiseAnimator.isRunning()){setProgress(this.progress);}
+            invalidate();
+        }
     }
 
     private void flowingAnimation(){
-        ObjectAnimator animator = ObjectAnimator.ofFloat(this,"wave",0,100)
+        flowingAnimato = ObjectAnimator.ofFloat(this,"wave",0,100)
                 .setDuration(100);
-        animator.setRepeatCount(INFINITE);
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        flowingAnimato.setRepeatCount(INFINITE);
+        flowingAnimato.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
                 dx = dx + speed;
@@ -596,29 +632,49 @@ public class WaveView extends View {
             }
         })
         ;
-        animator.start();
+        flowingAnimato.start();
     }
 
     private void riseAnimation(){
+        if (!isHasWindowFocus){
+            // TODO: 2016/10/26 不可视的时候停止
+            return ;
+        }
         isMeasure = true;
         if (dy > 0) {
-            float s = updateDyData();
-            Log.i("yuan", "move s " + s + "and sum_dy" + sum_dy);
-                reiseAnimator = ValueAnimator.ofFloat(0, s)
-                        .setDuration(500);
-                reiseAnimator.setInterpolator(new LinearInterpolator());
-                reiseAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                        float m = (float) valueAnimator.getAnimatedValue();
-                        float s = old_dy - m;
-                        dy = s;
-                        Log.i("yuan", "move m " + m + "dy " + dy);
-                    }
-                });
+            float offset = updateDyData();
+//            Log.i("yuan", "move s " + s + "and sum_dy" + sum_dy);
+            reiseAnimator = ValueAnimator.ofFloat(0, offset)
+                    .setDuration(500);
+            reiseAnimator.setInterpolator(new LinearInterpolator());
+            reiseAnimator.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animator) {}
+
+                @Override
+                public void onAnimationEnd(Animator animator) {
+                    // TODO: 2016/10/26 必须重置dy,修正偏移 
+                    dy = sum_dy - beforDy;
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animator) {}
+
+                @Override
+                public void onAnimationRepeat(Animator animator) {}
+            });
+            reiseAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                    float m = (float) valueAnimator.getAnimatedValue();
+                    float s = old_dy - m;
+                    dy = s;
+//                        Log.i("yuan", "move m " + m + "dy " + dy);
+                }
+            });
 
 
-                reiseAnimator.start();
+            reiseAnimator.start();
         }
     }
 
