@@ -129,7 +129,11 @@ public class WaveView extends View {
     public  static float SPEED_SLOW = 10f; // Slow speed
     public  static float SPEED_NORMAL = 30f;// normal speed
     public  static float SPEED_FAST = 40f;// fast speed
+    private int  isSlow = 0x01;
+    private int isNormal = 0x02;
+    private int isFast = 0x03;
     private float speed = SPEED_NORMAL;// default speed
+    private int curSpeedMode = isNormal;
 
     /**
      * < the progress for waveview ></>
@@ -277,9 +281,9 @@ public class WaveView extends View {
             SPEED_SLOW = SPEED_SLOW ==0?0.5f:SPEED_SLOW;
             SPEED_FAST = SPEED_FAST ==0?2:SPEED_FAST;
 
-            if (speed == 10){
+            if (curSpeedMode == isSlow){
                 speed = SPEED_SLOW;
-            }else if (speed == 40){
+            }else if (curSpeedMode == isFast){
                 speed = SPEED_FAST;
             }else{
                 speed = SPEED_NORMAL;
@@ -314,6 +318,14 @@ public class WaveView extends View {
      */
     public void setSpeed(float speed) {
         if (speed == SPEED_FAST || speed == SPEED_NORMAL || speed == SPEED_SLOW) {
+
+            if (speed == SPEED_FAST){
+                curSpeedMode = isFast;
+            }else if (speed == SPEED_SLOW){
+                curSpeedMode = isSlow;
+            }else{
+                curSpeedMode = isNormal;
+            }
             this.speed = speed;
             dx = 0;
             shd_dx = 0;
