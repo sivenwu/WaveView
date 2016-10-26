@@ -194,6 +194,7 @@ public class WaveView extends View {
             public void onGlobalLayout() {
                 // TODO Auto-generated method stub
                 Log.i(TAG,"绘制完成");
+                setSpeed(speed);
                 if (isHasWindowFocus && progress > 0){
 
                     isCompleteLayout = true;
@@ -269,14 +270,21 @@ public class WaveView extends View {
 
             //change speed base on view_width
             SPEED_NORMAL =  (DensityUtil.px2dip(mContext,VIEW_WIDTH)/20);
-            SPEED_SLOW = SPEED_NORMAL/3;
-            SPEED_FAST = SPEED_SLOW * 4;
+            SPEED_SLOW = SPEED_NORMAL/2;
+            SPEED_FAST = SPEED_NORMAL * 2;
 
             SPEED_NORMAL = SPEED_NORMAL ==0?1:SPEED_NORMAL;
             SPEED_SLOW = SPEED_SLOW ==0?0.5f:SPEED_SLOW;
             SPEED_FAST = SPEED_FAST ==0?2:SPEED_FAST;
 
-            this.speed = SPEED_NORMAL; // default
+            if (speed == 10){
+                speed = SPEED_SLOW;
+            }else if (speed == 40){
+                speed = SPEED_FAST;
+            }else{
+                speed = SPEED_NORMAL;
+            }
+
             Log.i(TAG,"init speed ( normal : " + SPEED_NORMAL +" slow : "+SPEED_SLOW +" fast : "+SPEED_FAST +" )");
         }
     }
