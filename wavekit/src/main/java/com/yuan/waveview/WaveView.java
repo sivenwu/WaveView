@@ -223,10 +223,21 @@ public class WaveView extends View {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         Log.d(TAG,"onMeasure " +isHasWindowFocus);
-        if (!isMeasure)
-            setMeasuredDimension(getRealWidthMeasureSpec(widthMeasureSpec),getRealHeightMeasureSpec(heightMeasureSpec));
+        if (!isMeasure) {
+            // 修正 高度 宽度必须一致，以较大的作为标准
+            getRealWidthMeasureSpec(widthMeasureSpec);
+            getRealHeightMeasureSpec(heightMeasureSpec);
+            if (VIEW_HEIGHT > VIEW_WIDTH){
+                VIEW_WIDTH = VIEW_HEIGHT;
+            }else{
+                VIEW_HEIGHT = VIEW_WIDTH;
+            }
+            setMeasuredDimension((int)VIEW_WIDTH,(int)VIEW_HEIGHT);
+        }
         initPoint();
     }
+
+
 
     /**
      * Initialize the original wave arts collection point , including normal wave ,rolling wave
@@ -444,6 +455,10 @@ public class WaveView extends View {
     }
 
     private int updateDyData(){
+
+        // TODO: 2017/4/18 解决不能自定义大小
+        if (sum_dy == 0 && isHasWindowFocus){sum_dy = VIEW_HEIGHT;}
+
         old_dy = dy;
         int offsetDy = (int) (sum_dy - sum_dy * progressRatio - beforDy);
         beforDy = sum_dy - sum_dy * progressRatio;
@@ -661,6 +676,7 @@ public class WaveView extends View {
             return ;
         }
         isMeasure = true;
+        Log.i("yuan", "move "  + "dy " + dy);
         if (dy > 0) {
             float offset = updateDyData();
 //            Log.i("yuan", "move s " + s + "and sum_dy" + sum_dy);
@@ -689,7 +705,7 @@ public class WaveView extends View {
                     float m = (float) valueAnimator.getAnimatedValue();
                     float s = old_dy - m;
                     dy = s;
-//                        Log.i("yuan", "move m " + m + "dy " + dy);
+                        Log.i("yuan", "move m " + m + "dy " + dy);
                 }
             });
 
