@@ -22,6 +22,10 @@ android {
     }
 }
 
+repositories {
+    maven { url = 'https://dl.bintray.com/yuancloud/maven/' }
+}
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
@@ -29,5 +33,8 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:24.0.0-beta1'
     testCompile 'junit:junit:4.12'
-    compile project(':wavekit')
+//    compile project(':wavekit')
+
+    compile 'cn.yuancloud.app:wavekit:1.0'
+
 }

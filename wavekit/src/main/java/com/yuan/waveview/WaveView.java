@@ -31,7 +31,7 @@ import static android.view.animation.Animation.INFINITE;
 /**
  * Created by Yuan on 2016/10/8.
  * Detail wave for view
- *        <tr>
+ *        --
  *            Thank you for your support!
  *            Imitate the Android progress of  method, At present support functions:
  *
@@ -44,7 +44,7 @@ import static android.view.animation.Animation.INFINITE;
  *           My :
  *           E-mail : sy.wu@foxmail.com
  *           Blog : http://www.jianshu.com/users/d388bcf9c4d3/
- *        </tr>
+ *       --
  *
  * KeyWord  rolling wave ,normal wave.waveview shapes,speed mode,shadow...
  */
@@ -87,7 +87,7 @@ public class WaveView extends View {
 
     /**
      * There are three kinds of waveview shapes(mode), including circle、rect and drawable
-     * < Drawable shape , you need to have default drawable></>
+     * -- Drawable shape , you need to have default drawable
      */
     public final static String MODE_CIRCLE = "circle";
     public final static String MODE_RECT = "rect";

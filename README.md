@@ -32,6 +32,17 @@ Blog : http://www.jianshu.com/users/d388bcf9c4d3/
 
 #### First
 
+Add repositories and dependencies into your project
+```java
+    // repositories
+    repositories {
+      maven { url = 'https://dl.bintray.com/yuancloud/maven/' }
+    }
+
+    // dependencies
+     compile 'cn.yuancloud.app:wavekit:1.0'
+```
+
 Add a WaveView into your XML
 
 ```java
