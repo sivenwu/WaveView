@@ -14,7 +14,9 @@ import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -54,6 +56,7 @@ public class WaveView extends View {
     private final String TAG = "WaveView";
     private Context mContext;
 
+    private Paint mPaint;
     private Paint wavePaint;
 
     /**
@@ -186,12 +189,18 @@ public class WaveView extends View {
 
         this.mContext = context;
 
+        mPaint=  new Paint();
+        mPaint.setColor(BG_COLOR);
+        mPaint.setStrokeWidth(1);
+        mPaint.setStyle(Paint.Style.FILL);
+        mPaint.setAntiAlias(true);
+
         wavePaint = new Paint();
         wavePaint.setColor(BG_COLOR);
         wavePaint.setStrokeWidth(1);
         wavePaint.setStyle(Paint.Style.FILL);
         wavePaint.setAntiAlias(true);
-        wavePaint.setAlpha(50);
+//        wavePaint.setAlpha(50);
 
         this.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -199,7 +208,7 @@ public class WaveView extends View {
                 // TODO Auto-generated method stub
                 Log.i(TAG,"绘制完成");
                 setSpeed(speed);
-                if (isHasWindowFocus && progress > 0){
+                if (isHasWindowFocus){
 
                     isCompleteLayout = true;
 
@@ -207,10 +216,15 @@ public class WaveView extends View {
                     if (max >= progress) {
                         progressRatio = progress / (float) max;
                         dy = updateDyData();
+//                        Log.i(TAG,"update dy " + dy);
                         getViewTreeObserver().removeOnGlobalLayoutListener(this);
                         isMeasure = true;
                     }
                 }
+                if (isHasWindowFocus){
+
+                }
+
                 VIEW_HEIGHT_TMP = VIEW_HEIGHT;
                 VIEW_WIDTH_TMP = VIEW_WIDTH;
                 Log.i(TAG,"tmp of width and tmp of hight is init ! "+VIEW_WIDTH_TMP +" "+VIEW_WIDTH_TMP);
@@ -222,7 +236,7 @@ public class WaveView extends View {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        Log.d(TAG,"onMeasure " +isHasWindowFocus);
+//        Log.d(TAG,"onMeasure " +isHasWindowFocus);
         if (!isMeasure) {
             // 修正 高度 宽度必须一致，以较大的作为标准
             getRealWidthMeasureSpec(widthMeasureSpec);
@@ -382,6 +396,17 @@ public class WaveView extends View {
      * @param progress
      */
     public void setProgress(long progress) {
+        mPaint.setColor(BG_COLOR);
+        mPaint.setAlpha(255);
+
+        isDone = false;
+        if (progress > max) {
+            if (this.progress < max) progress  = max;
+            else return;
+        }
+
+        if (flowingAnimato == null) flowingAnimation();
+
         if (reiseAnimator!=null && reiseAnimator.isRunning()){
 //            reiseAnimator.cancel();//不应该取消，应该让其直接结束
             reiseAnimator.end();
@@ -536,8 +561,6 @@ public class WaveView extends View {
         wavePath.reset();
         shadPath.reset();
 
-        wavePaint.setColor(BG_COLOR);
-        wavePaint.setAlpha(255);
         float radius = VIEW_WIDTH / 2f;
 
         int saveFlags = Canvas.MATRIX_SAVE_FLAG | Canvas.CLIP_SAVE_FLAG | Canvas.HAS_ALPHA_LAYER_SAVE_FLAG | Canvas.FULL_COLOR_LAYER_SAVE_FLAG | Canvas.CLIP_TO_LAYER_SAVE_FLAG;
@@ -545,105 +568,125 @@ public class WaveView extends View {
 
         // set shape
         if (mode.equals(MODE_DRAWABLE)){
-            drawableToBitamp(mContext.getResources().getDrawable(R.drawable.wave_icon,null),canvas);
+            drawableToBitamp(ContextCompat.getDrawable(mContext,R.drawable.wave_icon),canvas);
         } else if (mode.equals(MODE_RECT)){
-            canvas.drawRect(0,0,VIEW_WIDTH,VIEW_HEIGHT,wavePaint);
+            canvas.drawRect(0,0,VIEW_WIDTH,VIEW_HEIGHT,mPaint);
         } else{
-            canvas.drawCircle(VIEW_WIDTH / 2f, VIEW_HEIGHT / 2f, radius, wavePaint);
+            canvas.drawCircle(VIEW_WIDTH / 2f, VIEW_HEIGHT / 2f, radius, mPaint);
         }
 
         wavePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_ATOP));
 
-        // drawing normal wave
-        wavePaint.setColor(WAVE_COLOR);
-        wavePaint.setAlpha(80);
-        float end1 = 0;
-        for (int i = 0; i < pointList.size(); i++) {
-            int j = i + 1;
-            if (pointList.size() > i) {
-                float start1 = pointList.get(i).x;
-                wavePath.moveTo(start1, dy);//+dy
-                if (j % 2 == 0 && j >= 2) {
-                    end1 = start1;
-                    wavePath.quadTo(start1 + WAVE_WIDTH / 2, dy + WAVE_HEIGHT, start1 + WAVE_WIDTH, dy);//+dy
-                } else {
-                    end1 = start1;
-                    wavePath.quadTo(start1 + WAVE_WIDTH / 2, dy - WAVE_HEIGHT, start1 + WAVE_WIDTH, dy);
-                }}
-        }
+        if (!isDone) {
+            // drawing normal wave
+            wavePaint.setColor(WAVE_COLOR);
+            wavePaint.setAlpha(100);
 
-        if (end1 >= VIEW_WIDTH) {
-            wavePath.lineTo(VIEW_WIDTH, VIEW_HEIGHT);
-            wavePath.lineTo(0, VIEW_HEIGHT);
-            wavePath.lineTo(0, dy);
-            wavePath.close();
-            canvas.drawPath(wavePath, wavePaint);
-        }
-
-        // drawing rolling wave
-        wavePaint.setAlpha(50);
-        for (int i = 0; i < shadpointList.size(); i++) {
-            int j = i + 1;
-            if (shadpointList.size() > i) {
-                float start1 = shadpointList.get(i).x + shd_dx;
-                shadPath.moveTo(start1, dy);//+dy
-                if (j % 2 == 0 && j >= 2) {
-                    end1 = start1;
-                    shadPath.quadTo(start1 - WAVE_WIDTH / 2, (float) (dy + WAVE_HEIGHT *runRatio), start1 - WAVE_WIDTH, dy);//+dy
-                } else {
-                    end1 = start1;
-                    shadPath.quadTo(start1 - WAVE_WIDTH / 2, (float) (dy - WAVE_HEIGHT*runRatio), start1 - WAVE_WIDTH, dy);
+            float end1 = 0;
+            for (int i = 0; i < pointList.size(); i++) {
+                int j = i + 1;
+                if (pointList.size() > i) {
+                    float start1 = pointList.get(i).x;
+                    wavePath.moveTo(start1, dy);//+dy
+                    if (j % 2 == 0 && j >= 2) {
+                        end1 = start1;
+                        wavePath.quadTo(start1 + WAVE_WIDTH / 2, dy + WAVE_HEIGHT, start1 + WAVE_WIDTH, dy);//+dy
+                    } else {
+                        end1 = start1;
+                        wavePath.quadTo(start1 + WAVE_WIDTH / 2, dy - WAVE_HEIGHT, start1 + WAVE_WIDTH, dy);
+                    }
                 }
             }
-        }
-        if (end1 <= -VIEW_WIDTH) {
-            shadPath.lineTo(0, VIEW_HEIGHT);
-            shadPath.lineTo(VIEW_WIDTH, VIEW_HEIGHT);
-            shadPath.lineTo(VIEW_WIDTH, dy);
-            shadPath.close();
-            canvas.drawPath(shadPath, wavePaint);
-        }
 
-        // xfer
-        wavePaint.setXfermode(null);
-        canvas.restore();
+            if (end1 >= VIEW_WIDTH) {
+                wavePath.lineTo(VIEW_WIDTH, VIEW_HEIGHT);
+                wavePath.lineTo(0, VIEW_HEIGHT);
+                wavePath.lineTo(0, dy);
+                wavePath.close();
+                canvas.drawPath(wavePath, wavePaint);
+            }
+
+            // drawing rolling wave
+            wavePaint.setAlpha(200);
+            for (int i = 0; i < shadpointList.size(); i++) {
+                int j = i + 1;
+                if (shadpointList.size() > i) {
+                    float start1 = shadpointList.get(i).x + shd_dx;
+                    shadPath.moveTo(start1, dy);//+dy
+                    if (j % 2 == 0 && j >= 2) {
+                        end1 = start1;
+                        shadPath.quadTo(start1 - WAVE_WIDTH / 2, (float) (dy + WAVE_HEIGHT * runRatio), start1 - WAVE_WIDTH, dy);//+dy
+                    } else {
+                        end1 = start1;
+                        shadPath.quadTo(start1 - WAVE_WIDTH / 2, (float) (dy - WAVE_HEIGHT * runRatio), start1 - WAVE_WIDTH, dy);
+                    }
+                }
+            }
+            if (end1 <= -VIEW_WIDTH) {
+                shadPath.lineTo(0, VIEW_HEIGHT);
+                shadPath.lineTo(VIEW_WIDTH, VIEW_HEIGHT);
+                shadPath.lineTo(VIEW_WIDTH, dy);
+                shadPath.close();
+                canvas.drawPath(shadPath, wavePaint);
+            }
+
+            // xfer
+            wavePaint.setXfermode(null);
+            canvas.restore();
 //        super.onDraw(canvas);
 
-        // display listener for activity or fragment
-        if (this.progressListener != null){
-            if (!isDone && curProgress != this.progress) {
-                this.progressListener.onPorgress(this.progress == this.max, this.progress, this.max);
-                curProgress = this.progress;
-            }
-            if (this.progress == this.max){
-                isDone = true;
+            // display listener for activity or fragment
+            if (this.progressListener != null) {
+                if (!isDone && curProgress != this.progress) {
+                    this.progressListener.onPorgress(this.progress == this.max, this.progress, this.max);
+                    curProgress = this.progress;
+                }
+                if (this.progress == this.max) {
+                    isDone = true;
 //                dy = -10;//In order to complete fill finally effect
 //                resetWave();
+                }
             }
+
+            if (isDone) doneAnimation();
+
         }
+
     }
 
     @Override
     public void onWindowFocusChanged(boolean hasWindowFocus) {
         super.onWindowFocusChanged(hasWindowFocus);
         isHasWindowFocus = hasWindowFocus;
-        if (!isStartAnimation){
+//        Log.d("yuan"," onWindowFocusChanged " + hasWindowFocus);
+        if (!isDone){
+        if (!isStartAnimation) {
             isStartAnimation = true;
             flowingAnimation();
         }
         // TODO: 2016/10/26  屏幕重新点亮的时候 一定要重新测量！！！
-        if (!hasWindowFocus){
-            if (flowingAnimato!=null)
+        if (!hasWindowFocus) {
+            if (flowingAnimato != null)
                 flowingAnimato.cancel();
-            if (reiseAnimator!=null)
+            if (reiseAnimator != null)
                 reiseAnimator.end();
             isMeasure = false;
-        }else{
-            if (flowingAnimato!=null && !flowingAnimato.isRunning()){flowingAnimation();}
-            if (reiseAnimator!=null && !reiseAnimator.isRunning()){setProgress(this.progress);}
-            invalidate();
+        } else {
+            if (flowingAnimato != null && !flowingAnimato.isRunning()) {
+                flowingAnimation();
+            }
+            if (reiseAnimator != null && !reiseAnimator.isRunning()) {
+                setProgress(this.progress);
+            }
+        }
+    }else{
+//        Log.d("yuan"," onWindowFocusChanged " + isDone);
+        if (isHasWindowFocus) {
+            doneAnimation();
         }
     }
+
+}
 
     private void flowingAnimation(){
         flowingAnimato = ObjectAnimator.ofFloat(this,"wave",0,100)
@@ -655,11 +698,12 @@ public class WaveView extends View {
                 dx = dx + speed;
                 shd_dx = shd_dx + speed/2;//Half the speed of the normal waves
 
-                if (shd_dx == WAVE_WIDTH *2){
+                // 20171026
+                if (shd_dx >= WAVE_WIDTH *2){
                     shd_dx = 0;
                 }
 
-                if (dx == WAVE_WIDTH *2){
+                if (dx >= WAVE_WIDTH *2){
                     dx = 0;
                 }
                 rerefreshPoints();
@@ -679,7 +723,7 @@ public class WaveView extends View {
         Log.i("yuan", "move "  + "dy " + dy);
         if (dy > 0) {
             float offset = updateDyData();
-//            Log.i("yuan", "move s " + s + "and sum_dy" + sum_dy);
+            Log.i("yuan", "move s " + offset + "and sum_dy" + sum_dy);
             reiseAnimator = ValueAnimator.ofFloat(0, offset)
                     .setDuration(500);
             reiseAnimator.setInterpolator(new LinearInterpolator());
@@ -689,7 +733,7 @@ public class WaveView extends View {
 
                 @Override
                 public void onAnimationEnd(Animator animator) {
-                    // TODO: 2016/10/26 必须重置dy,修正偏移 
+                    // TODO: 2016/10/26 必须重置dy,修正偏移
                     dy = sum_dy - beforDy;
                 }
 
@@ -705,7 +749,7 @@ public class WaveView extends View {
                     float m = (float) valueAnimator.getAnimatedValue();
                     float s = old_dy - m;
                     dy = s;
-                        Log.i("yuan", "move m " + m + "dy " + dy);
+//                        Log.i("yuan", "move m " + m + "dy " + dy);
                 }
             });
 
@@ -714,6 +758,45 @@ public class WaveView extends View {
         }
     }
 
+    private void doneAnimation(){
+        if (reiseAnimator != null) {
+            reiseAnimator.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    justDone();
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+
+                }
+            });
+            reiseAnimator.end();
+        }else{
+            justDone();
+        }
+
+    }
+
+    private void justDone(){
+        mPaint.setColor(WAVE_COLOR);
+//        mPaint.setAlpha(200);
+        if (flowingAnimato != null && flowingAnimato.isRunning()) {
+            flowingAnimato.end();
+            flowingAnimato = null;
+        }
+        else invalidate();
+    }
 
     /**
      * drawable to bitmap
@@ -729,14 +812,14 @@ public class WaveView extends View {
                 drawable.getOpacity() != PixelFormat.OPAQUE ? Bitmap.Config.ARGB_8888
                         : Bitmap.Config.RGB_565;
         Bitmap bitmap = Bitmap.createBitmap(w,h,config);
-        canvas.drawBitmap(bitmap,0,0,wavePaint);
+        canvas.drawBitmap(bitmap,0,0,mPaint);
         drawable.setBounds(0, 0, w, h);
         drawable.draw(canvas);
     }
 
-    public interface waveProgressListener{
-        void onPorgress(boolean isDone, long progress, long max);
-    }
+public interface waveProgressListener{
+    void onPorgress(boolean isDone, long progress, long max);
+}
 
 }
 

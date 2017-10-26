@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -29,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     RadioGroup radioGroupSpeed;
 
     int count = 0;
-    int max = 20;
+    private static final int max = 10;
     int speed = 5;
 
     private Handler handler = new Handler(){
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
             super.handleMessage(msg);
             if (msg.what == 100){
                 if (max >= count) {
+                    Log.d("demo",count + "");
                     waveView.setProgress(count);
                 }else {
                     resetTimer();
@@ -74,10 +76,10 @@ public class MainActivity extends AppCompatActivity {
         progressTv = (TextView) findViewById(R.id.pb_show_tv);
         speedBtn = (Button) findViewById(R.id.speed);
 
-        waveView.setMax(50);
-        waveView.setProgress(10);
+        waveView.setMax(max);
+        waveView.setWaveColor(ContextCompat.getColor(MainActivity.this,R.color.light_blue));
+//        waveView.setProgress(10);
 
-        max = (int) waveView.getMax();
     }
 
     private void initListener(){
@@ -135,18 +137,18 @@ public class MainActivity extends AppCompatActivity {
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 switch (i){
                     case R.id.color_black:
-                        waveView.setWaveColor(Color.BLACK);
+                        waveView.setWaveColor(ContextCompat.getColor(MainActivity.this,R.color.light_black));
                         break;
 
                     case R.id.color_red:
-                        waveView.setWaveColor(Color.RED);
+                        waveView.setWaveColor(ContextCompat.getColor(MainActivity.this,R.color.light_red));
                         break;
 
                     case R.id.color_blue:
-                        waveView.setWaveColor(Color.BLUE);
+                        waveView.setWaveColor(ContextCompat.getColor(MainActivity.this,R.color.light_blue));
                         break;
                     case R.id.color_green:
-                        waveView.setWaveColor(Color.GREEN);
+                        waveView.setWaveColor(ContextCompat.getColor(MainActivity.this,R.color.light_green));
                         break;
                 }
             }
